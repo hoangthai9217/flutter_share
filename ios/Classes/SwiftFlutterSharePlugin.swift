@@ -61,13 +61,11 @@ public class SwiftFlutterSharePlugin: NSObject, FlutterPlugin {
         
         let activityViewController = UIActivityViewController(activityItems: sharedItems, applicationActivities: nil)
         
-        // For iOS 13, the dismissal of UIActivityViewController somehow is a
+        // The dismissal of UIActivityViewController somehow is a
         // trigger to presenting view controller's dismiss function
         // So to avoid it, we present it on another window
-        if ProcessInfo.processInfo.operatingSystemVersion.majorVersion == 13 {
-            activityViewController.completionWithItemsHandler = { (_, _, _, _) in
-                UIApplication.shared.delegate?.window??.makeKeyAndVisible()
-            }
+        activityViewController.completionWithItemsHandler = { (_, _, _, _) in
+            UIApplication.shared.delegate?.window??.makeKeyAndVisible()
         }
         
         // Subject
@@ -76,13 +74,11 @@ public class SwiftFlutterSharePlugin: NSObject, FlutterPlugin {
         }
         
         DispatchQueue.main.async {
-            // Use this workaround only on iOS 13
-            if ProcessInfo.processInfo.operatingSystemVersion.majorVersion == 13 {
-                self.activityWindow.makeKeyAndVisible()
-                self.activityWindow.rootViewController?.present(activityViewController, animated: true)
-            } else {
-                UIApplication.topViewController()?.present(activityViewController, animated: true, completion: nil)
-            }
+            // The dismissal of UIActivityViewController somehow is a
+            // trigger to presenting view controller's dismiss function
+            // So to avoid it, we present it on another window
+            self.activityWindow.makeKeyAndVisible()
+            self.activityWindow.rootViewController?.present(activityViewController, animated: true)
         }
         
         return true
